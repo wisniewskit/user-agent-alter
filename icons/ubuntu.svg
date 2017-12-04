@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Licensed under a CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+     http://creativecommons.org/publicdomain/zero/1.0/
+
+     Source: https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+<use href="#ubuntu" width="100" height="100"></use>
+<defs>
+<svg id="ubuntu" viewBox="-142.5 -142.5 285 285" xmlns="http://www.w3.org/2000/svg"><circle fill="#dd4814" r="141.732"/><g id="ub1" fill="#FFF"><circle cx="-96.3772" r="18.9215"/><path d="M-45.6059,68.395C-62.1655,57.3316-74.4844,40.4175-79.6011,20.6065-73.623,15.7354-69.8047,8.3164-69.8047,0-69.8047-8.3164-73.623-15.7354-79.6011-20.6065-74.4844-40.4175-62.1655-57.3316-45.6059-68.395L-31.7715-45.2212C-45.9824-35.2197-55.2754-18.7026-55.2754,0-55.2754,18.7026-45.9824,35.2197-31.7715,45.2212Z"/></g><use href="#ub1" transform="rotate(120)"/><use href="#ub1" transform="rotate(240)"/></svg>
+</defs>
+</svg>

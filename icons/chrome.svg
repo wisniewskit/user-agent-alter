@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Licensed under a CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+     http://creativecommons.org/publicdomain/zero/1.0/
+
+     Source: https://github.com/alrra/browser-logos/blob/f5e0566c0de1f961828036a8f8b296678e70aa40/src/chrome/chrome.svg (simplified version) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+<use href="#chrome" width="100" height="100"></use>
+<defs>
+<svg id="chrome" viewBox="1 1 190 190" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ch1" cx="34.29" cy="32.01" r="176.75" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><circle id="ch3" cx="96" cy="96" r="88"/></defs><clipPath id="ch2"><use href="#ch3" overflow="visible"/></clipPath><g clip-path="url(#ch2)"><path fill="#db4437" d="M22 8v108h39.4L96 56h88V8z"/></g><g clip-path="url(#ch2)"><path fill="#0f9d58" d="M8 184h83.8l39-39v-29H61.2L8 24.5z"/></g><g clip-path="url(#ch2)"><path fill="#ffcd40" d="M96 56l34.6 60L92 184h92V56z"/></g><g clip-path="url(#ch2)"><circle cx="96" cy="96" r="40" fill="#f1f1f1"/><circle cx="96" cy="96" r="32" fill="#4285f4"/></g><circle cx="96" cy="96" r="88" fill="url(#ch1)"/><path fill="none" d="M0 0h192v192H0z"/></svg>
+</defs>
+</svg>

@@ -1,0 +1,110 @@
+{
+  "addonName": {
+    "message": "User Agent Alter"
+  },
+  "addonDescription": {
+    "message": "Override user-agent information per tab, (sub)domain, container, window, or globally."
+  },
+  "addonAuthorsList": {
+    "message": "Thomas Wisniewski <twisniewski@mozilla.com>"
+  },
+  "browserActionLabel": {
+    "message": "Spoofing as $1"
+  },
+  "platformLabelDefault": {
+    "message": "Default"
+  },
+  "platformLabelAndroid": {
+    "message": "Android Browser $1 (WebKit)"
+  },
+  "platformLabelChromeAndroid": {
+    "message": "Chrome $1 (Android Tablet)"
+  },
+  "platformLabelChromeAndroidPhone": {
+    "message": "Chrome $1 (Android Phone)"
+  },
+  "platformLabelChromeLinux": {
+    "message": "Chrome $1 (Linux)"
+  },
+  "platformLabelChromeOSX": {
+    "message": "Chrome $1 (OSX)"
+  },
+  "platformLabelChromeIOS": {
+    "message": "Chrome $1 (iPad)"
+  },
+  "platformLabelChromeIOSPhone": {
+    "message": "Chrome $1 (iPhone)"
+  },
+  "platformLabelChromeWindows": {
+    "message": "Chrome $1 (Windows)"
+  },
+  "platformLabelFirefoxAndroid": {
+    "message": "Firefox $1 (Android Tablet)"
+  },
+  "platformLabelFirefoxAndroidPhone": {
+    "message": "Firefox $1 (Android Phone)"
+  },
+  "platformLabelFirefoxLinux": {
+    "message": "Firefox $1 (Linux)"
+  },
+  "platformLabelFirefoxOSX": {
+    "message": "Firefox $1 (OSX)"
+  },
+  "platformLabelFirefoxIOS": {
+    "message": "Firefox $1 (iPad)"
+  },
+  "platformLabelFirefoxIOSPhone": {
+    "message": "Firefox $1 (iPhone)"
+  },
+  "platformLabelFirefoxWindows": {
+    "message": "Firefox $1 (Windows)"
+  },
+  "platformLabelSafariOSX": {
+    "message": "Safari $1 (OSX)"
+  },
+  "platformLabelSafariIOS": {
+    "message": "Safari $1 (iPad)"
+  },
+  "platformLabelSafariIOSPhone": {
+    "message": "Safari $1 (iPhone)"
+  },
+  "platformLabelExplorerWindows": {
+    "message": "Internet Explorer $1"
+  },
+  "platformLabelEdgeWindows": {
+    "message": "Edge $1"
+  },
+  "drillDownArrow": {
+    "message": ">"
+  },
+  "platformOptionTab": {
+    "message": "UA override for this tab"
+  },
+  "platformOptionDomain": {
+    "message": "UA override for $1"
+  },
+  "platformOptionSubdomain": {
+    "message": "UA override for $1"
+  },
+  "platformOptionContainer": {
+    "message": "UA override for $1 container"
+  },
+  "platformOptionWindow": {
+    "message": "UA override for this window"
+  },
+  "platformOptionGlobal": {
+    "message": "Global UA override"
+  },
+  "platformOptionCancel": {
+    "message": "Cancel"
+  },
+  "platformUnset": {
+    "message": "-"
+  },
+  "platformSelectForTab": {
+    "message": "Select UA override for this tab"
+  },
+  "platformSelectDetails": {
+    "message": "Use $1 as the:"
+  }
+}
