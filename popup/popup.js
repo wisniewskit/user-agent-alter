@@ -27,7 +27,7 @@ function handleClick(e) {
     } else {
       let details = document.querySelector(".details");
       let platform = details.getAttribute("data-for-list-item");
-      changeActivePlatformAndClosePopup(platform, action);
+      changeActivePlatform(platform, action);
     }
     return;
   }
@@ -39,14 +39,17 @@ function handleClick(e) {
     if (e.target.nodeName === "BUTTON") {
       let action = li.getAttribute("data-action");
       if (action && action.startsWith("unset-")) {
-        changeActivePlatformAndClosePopup(undefined, action.substr(6));
+        changeActivePlatform(undefined, action.substr(6), false).then(() => {
+          li.parentNode.previousSibling.remove();
+          li.parentNode.remove();
+        })
       } else {
         drillDownIntoDetails(platform);
       }
       return;
     }
 
-    changeActivePlatformAndClosePopup(platform, "tab");
+    changeActivePlatform(platform, "tab");
   }
 }
 
@@ -172,10 +175,13 @@ function redrawDetails(platform) {
   details.appendChild(frag);
 }
 
-function changeActivePlatformAndClosePopup(platform, scope) {
-  browser.runtime.sendMessage({platform, scope, closePopup: true}, () => {
-    if (!IsAndroid) {
-      this.close();
-    }
+function changeActivePlatform(platform, scope, closePopup = true) {
+  return new Promise(resolve => {
+    browser.runtime.sendMessage({platform, scope, closePopup}, () => {
+      if (closePopup && !IsAndroid) {
+        this.close();
+      }
+      resolve();
+    });
   });
 }
