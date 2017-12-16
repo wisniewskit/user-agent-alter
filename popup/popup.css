@@ -2,11 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-* {
+:not(input):not(textarea) {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+#clipboardHelper {
+  position: absolute;
+  top: -10em;
 }
 html {
   --size: 24px;
@@ -130,5 +134,26 @@ li button {
   padding: 0.2em 0.5em;
 }
 .details>* {
+  padding: 0.25em 0.5em;
+}
+@keyframes animationFadeInAndOut {
+  0%   { opacity:0; }
+  5%   { opacity:1; }
+  95%  { opacity:1; }
+  100% { opacity:0; }
+}
+.fadeInAndOut {
+  animation: animationFadeInAndOut 3s;
+}
+#copiedToClipboard {
+  opacity: 0;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+  border-radius: 5px;
+  background-color: #000;
+  color: #fff;
+  font-weight: normal;
   padding: 0.25em 0.5em;
 }

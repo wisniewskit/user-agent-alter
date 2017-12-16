@@ -11,6 +11,9 @@
   "browserActionLabel": {
     "message": "Spoofing as $1"
   },
+  "copiedToClipboard": {
+    "message": "Copied UA string to clipboard"
+  },
   "platformLabelDefault": {
     "message": "Default"
   },

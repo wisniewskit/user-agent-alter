@@ -21,6 +21,7 @@
   },
   "permissions": [
     "cookies",
+    "clipboardWrite",
     "contextualIdentities",
     "storage",
     "tabs",

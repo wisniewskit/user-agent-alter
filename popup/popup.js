@@ -15,11 +15,69 @@ let PlatformOptions = [];
 browser.runtime.onMessage.addListener(redraw);
 browser.runtime.sendMessage("getState", redrawList);
 
+function showCopiedTooltip(y) {
+  let tooltip = document.getElementById("copiedToClipboard");
+  if (!tooltip) {
+    tooltip = document.createElement("h1");
+    tooltip.id = "copiedToClipboard";
+    const text = browser.i18n.getMessage("copiedToClipboard");
+    tooltip.appendChild(document.createTextNode(text));
+  }
+  tooltip.remove();
+  document.body.appendChild(tooltip);
+  tooltip.style.top = y + "px";
+  tooltip.classList.add("fadeInAndOut");
+}
+
+function simulateLongTapAsRightClick() {
+  let touchStart;
+  let longTapDelay = 1000;;
+  document.body.addEventListener("touchstart", e => {
+    touchStart = touchStart || new Date();
+  });
+  document.body.addEventListener("touchmove", e => {
+    touchStart = null;
+  });
+  document.body.addEventListener("touchend", e => {
+    if (!touchStart) {
+      return;
+    }
+    if (new Date() - touchStart >= longTapDelay) {
+      e.button = 2;
+      handleClick(e);
+    }
+    touchStart = null;
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  simulateLongTapAsRightClick();
   document.body.addEventListener("click", handleClick);
+  document.body.addEventListener("contextmenu", handleClick);
 });
 
+function copyUAToClipboard(platformName, y) {
+  let helper = document.getElementById("clipboardHelper");
+  helper.value = CurrentPlatforms[platformName].overrides.navigator.userAgent;
+  helper.select();
+  document.execCommand("Copy");
+  helper.blur();
+  showCopiedTooltip(y);
+}
+
 function handleClick(e) {
+  if (e.button === 2) {
+    let li = e.target.closest("li");
+    if (li) {
+      let platformName = li.getAttribute("data-name");
+      if (platformName) {
+        copyUAToClipboard(platformName, e.clientY);
+        e.preventDefault();
+      }
+    }
+    return;
+  }
+
   let action = e.target.getAttribute("data-action");
   if (action) {
     if (action === "cancel") {
