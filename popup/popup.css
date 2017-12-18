@@ -60,7 +60,7 @@ button {
 button:hover {
   background-image: linear-gradient(to bottom, #f6f6f5, #dededd);
 }
-.list>h1 {
+h1 {
   font-style: italic;
   font-weight: normal;
   background-color: #ddd;
@@ -71,6 +71,9 @@ h1, p, li {
   font-size: var(--size2);
   line-height: var(--size);
   white-space: nowrap;
+}
+.breakdown h1 {
+  font-size: smaller;
 }
 li {
   padding: 0;
@@ -126,15 +129,38 @@ li button {
   margin: 0.2em auto;
   width: 99%;
 }
-.details, .details>p {
-  text-align: center;
-}
-.details>p {
+.details h1 {
   margin: 0;
   padding: 0.2em 0.5em;
 }
-.details>* {
+.details>:not(hr) {
   padding: 0.25em 0.5em;
+}
+.details>hr {
+  color: #eee;
+  margin: 0;
+}
+.expandable {
+  max-height: 0;
+  overflow: hidden;
+  transition-property: max-height;
+  transition: all 0.1s ease-in-out;
+}
+.details .breakdown {
+  margin: 0;
+  padding: 0;
+}
+input[type=text]:focus {
+  background-color: #f6f6f6;
+}
+.breakdown.expand {
+  padding: 4px;
+  border: 1px solid #eee;
+  border-radius: 3px;
+}
+.breakdown>ul {
+  padding: 0;
+  margin: 0;
 }
 @keyframes animationFadeInAndOut {
   0%   { opacity:0; }

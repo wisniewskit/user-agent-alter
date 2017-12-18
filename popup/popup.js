@@ -80,8 +80,20 @@ function handleClick(e) {
 
   let action = e.target.getAttribute("data-action");
   if (action) {
-    if (action === "cancel") {
+    if (action === "back") {
       goBackToList();
+    } else if (action === "expand") {
+      let bd = document.querySelector(".breakdown");
+      bd.style.maxHeight = "1000em";
+      bd.addEventListener("transitionend", () => {
+        bd.style.maxHeight = "auto";
+      }, { once: true });
+      e.target.style.display = "none";
+      document.querySelector("[data-action='collapse']").style.display = "";
+    } else if (action === "collapse") {
+      document.querySelector(".breakdown").style.maxHeight = "0";
+      e.target.style.display = "none";
+      document.querySelector("[data-action='expand']").style.display = "";
     } else {
       let details = document.querySelector(".details");
       let platform = details.getAttribute("data-for-list-item");
@@ -107,7 +119,9 @@ function handleClick(e) {
       return;
     }
 
-    changeActivePlatform(platform, "tab");
+    if (platform) {
+      changeActivePlatform(platform, "tab");
+    }
   }
 }
 
@@ -168,7 +182,13 @@ function determinePlatformOptions(data) {
   }
 
   PlatformOptions.push({label: browser.i18n.getMessage("platformOptionGlobal"), action: "global"});
-  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionCancel"), action: "cancel"});
+
+  PlatformOptions.push({label: "separator"});
+  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionExpand"), action: "expand"});
+  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionCollapse"), action: "collapse"});
+
+  PlatformOptions.push({label: "separator"});
+  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionBack"), action: "back"});
 }
 
 function redrawList(data) {
@@ -209,6 +229,41 @@ function redrawList(data) {
   list.appendChild(frag);
 }
 
+function addDetailsHeader(parent, messageName, messageArgs) {
+  let label = document.createElement("h1");
+  let message = browser.i18n.getMessage(messageName, messageArgs) || messageName;
+  label.appendChild(document.createTextNode(message));
+  parent.appendChild(label);
+  return label;
+}
+
+function addInputPairLI(parent, name, value, readonly=true) {
+  let li = document.createElement("li");
+  parent.appendChild(li);
+
+  for (let label of [name, value]) {
+    let i = document.createElement("input");
+    i.type = "text";
+    i.value = label || "";
+    i.placeholder = "undefined";
+    if (readonly) {
+      i.setAttribute("readonly", "readonly");
+    }
+    li.appendChild(i);
+
+    i.addEventListener("focus", expandFocusedInput);
+    i.addEventListener("blur", relaxFocusedInput);
+  }
+}
+
+function expandFocusedInput(e) {
+  (e.target.previousElementSibling || e.target.nextElementSibling).style.maxWidth = "4em";
+}
+
+function relaxFocusedInput(e) {
+  (e.target.previousElementSibling || e.target.nextElementSibling).style.maxWidth = "";
+}
+
 function redrawDetails(platform) {
   let details = document.querySelector(".details");
   details.setAttribute("data-for-list-item", platform);
@@ -216,17 +271,43 @@ function redrawDetails(platform) {
   let frag = document.createDocumentFragment();
   let platformDetails = CurrentPlatforms[platform];
 
-  let message = browser.i18n.getMessage("platformSelectDetails",
-                                        [platformDetails.label]);
-  let label = document.createElement("p");
-  label.appendChild(document.createTextNode(message));
-  frag.appendChild(label);
+  addDetailsHeader(frag, "platformSelectDetails", [platformDetails.label]);
 
   for (let {label, action} of PlatformOptions) {
+    if (label === "separator") {
+      frag.appendChild(document.createElement("hr"));
+      continue;
+    }
+
     let opt = document.createElement("button");
     opt.appendChild(document.createTextNode(label));
     opt.setAttribute("data-action", action);
     frag.appendChild(opt);
+
+    if (action === "collapse") {
+      opt.style.display = "none";
+
+      let bd = document.createElement("div");
+      bd.classList.add("breakdown");
+      bd.classList.add("expandable");
+      frag.appendChild(bd);
+
+      addDetailsHeader(bd, "platformSelectHeaderOverrides");
+      let ul = document.createElement("ul");
+      bd.appendChild(ul);
+      for (let [httpHeaderName, value] of Object.entries(platformDetails.headers)) {
+        addInputPairLI(ul, httpHeaderName, value);
+      }
+
+      addDetailsHeader(bd, "platformSelectScriptOverrides");
+      for (let [parentObjectName, overrides] of Object.entries(platformDetails.overrides)) {
+        let ul = document.createElement("ul");
+        bd.appendChild(ul);
+        for (let [objectName, objectValue] of Object.entries(overrides)) {
+          addInputPairLI(ul, `${parentObjectName}.${objectName}`, objectValue);
+        }
+      }
+    }
   }
 
   details.innerHTML = "";

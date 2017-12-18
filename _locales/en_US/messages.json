@@ -98,8 +98,14 @@
   "platformOptionGlobal": {
     "message": "Global UA override"
   },
-  "platformOptionCancel": {
-    "message": "Cancel"
+  "platformOptionCollapse": {
+    "message": "Hide applied overrides"
+  },
+  "platformOptionExpand": {
+    "message": "Show applied overrides"
+  },
+  "platformOptionBack": {
+    "message": "Back to UA List"
   },
   "platformUnset": {
     "message": "-"
@@ -109,5 +115,11 @@
   },
   "platformSelectDetails": {
     "message": "Use $1 as the:"
+  },
+  "platformSelectHeaderOverrides": {
+    "message": "HTTP header overrides"
+  },
+  "platformSelectScriptOverrides": {
+    "message": "Script overrides"
   }
 }
