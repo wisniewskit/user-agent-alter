@@ -15,6 +15,13 @@ let PlatformOptions = [];
 browser.runtime.onMessage.addListener(redraw);
 browser.runtime.sendMessage("getState", redrawList);
 
+function hideCopiedTooltip(y) {
+  let tooltip = document.getElementById("copiedToClipboard");
+  if (tooltip) {
+    tooltip.remove();
+  }
+}
+
 function showCopiedTooltip(y) {
   let tooltip = document.getElementById("copiedToClipboard");
   if (!tooltip) {
@@ -81,6 +88,7 @@ function handleClick(e) {
   let action = e.target.getAttribute("data-action");
   if (action) {
     if (action === "back") {
+      hideCopiedTooltip();
       goBackToList();
     } else if (action === "expand") {
       let bd = document.querySelector(".breakdown");
@@ -114,6 +122,7 @@ function handleClick(e) {
           li.parentNode.remove();
         })
       } else {
+        hideCopiedTooltip();
         drillDownIntoDetails(platform);
       }
       return;
