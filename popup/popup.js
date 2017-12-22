@@ -13,7 +13,7 @@ const DrillDownArrow = browser.i18n.getMessage("drillDownArrow");
 let PlatformOptions = [];
 
 browser.runtime.onMessage.addListener(redraw);
-browser.runtime.sendMessage("getState", redrawList);
+browser.runtime.sendMessage("getState");
 
 function hideCopiedTooltip(y) {
   let tooltip = document.getElementById("copiedToClipboard");
@@ -90,6 +90,8 @@ function handleClick(e) {
     if (action === "back") {
       hideCopiedTooltip();
       goBackToList();
+    } else if (action === "refresh") {
+      browser.runtime.sendMessage("refreshList");
     } else if (action === "expand") {
       let bd = document.querySelector(".breakdown");
       bd.style.maxHeight = "1000em";
@@ -201,15 +203,38 @@ function determinePlatformOptions(data) {
 }
 
 function redrawList(data) {
-  let platforms = CurrentPlatforms = data.platforms;
+  let list = document.querySelector(".list");
+  let frag = document.createDocumentFragment();
+
+  if (data.updateStatus === "loading") {
+    let div = document.createElement("div");
+    div.classList.add("loading");
+    div.appendChild(document.createTextNode(browser.i18n.getMessage("loadingUpdate")));
+    frag.appendChild(div);
+    list.innerHTML = "";
+    list.appendChild(frag);
+    return;
+  } else if (data.updateStatus && !Object.keys(data.platformSpecs || {}).length) {
+    let button = document.createElement("button");
+    button.setAttribute("data-action", "refresh");
+    button.classList.add("refresh");
+    button.appendChild(document.createTextNode(browser.i18n.getMessage("retryUpdate")));
+    frag.appendChild(button);
+    list.innerHTML = "";
+    list.appendChild(frag);
+    return;
+  }
+
+  let platforms = {};
+  for (let [name, spec] of Object.entries(data.platformSpecs)) {
+    platforms[name] = new Platform(spec);
+  }
+  CurrentPlatforms = platforms;
 
   determinePlatformOptions(data);
 
   CurrentURL = data.url;
   CurrentContainer = data.container;
-
-  let list = document.querySelector(".list");
-  let frag = document.createDocumentFragment();
 
   for (let {label, action} of PlatformOptions) {
     if (data.overrides[action]) {
@@ -304,17 +329,15 @@ function redrawDetails(platform) {
       addDetailsHeader(bd, "platformSelectHeaderOverrides");
       let ul = document.createElement("ul");
       bd.appendChild(ul);
-      for (let [httpHeaderName, value] of Object.entries(platformDetails.headers)) {
-        addInputPairLI(ul, httpHeaderName, value);
+      for (let override of platformDetails.headers()) {
+        addInputPairLI(ul, override.name, override.value);
       }
 
       addDetailsHeader(bd, "platformSelectScriptOverrides");
-      for (let [parentObjectName, overrides] of Object.entries(platformDetails.overrides)) {
-        let ul = document.createElement("ul");
-        bd.appendChild(ul);
-        for (let [objectName, objectValue] of Object.entries(overrides)) {
-          addInputPairLI(ul, `${parentObjectName}.${objectName}`, objectValue);
-        }
+      ul = document.createElement("ul");
+      bd.appendChild(ul);
+      for (let override of platformDetails.overrides()) {
+        addInputPairLI(ul, override.name, override.value);
       }
     }
   }

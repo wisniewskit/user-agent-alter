@@ -14,6 +14,15 @@
   "copiedToClipboard": {
     "message": "Copied UA string to clipboard"
   },
+  "invalidUpdateURL": {
+    "message": "Ignoring invalid update URL: $1"
+  },
+  "loadingUpdate": {
+    "message": "Loading list of user-agents..."
+  },
+  "retryUpdate": {
+    "message": "Failed to load list of user-agents. Click to retry."
+  },
   "platformLabelDefault": {
     "message": "Default"
   },
