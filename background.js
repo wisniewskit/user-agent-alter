@@ -18,7 +18,7 @@ let PlatformSpecs = {};
 let UpdateStatus;
 let UpdateLastCheckedDate;
 let UpdateFrequency = 1000 * 60 * 60 * 24 * 4; // check every 4 days by default
-let UpdateURL = "https://github.com/wisniewskit/user-agent-alter/blob/master/platform_list.json";
+let UpdateURL = "https://raw.githubusercontent.com/wisniewskit/user-agent-alter/master/platform_list.json";
 
 readConfig().then(checkForUAListUpdate);
 
