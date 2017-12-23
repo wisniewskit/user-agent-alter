@@ -82,6 +82,13 @@ function copyUAToClipboard(platformName, y) {
   showCopiedTooltip(y);
 }
 
+function changeInputWithEvent(input, value) {
+  input.value = "";
+  var evt = document.createEvent("HTMLEvents");
+  evt.initEvent("change", false, true);
+  input.dispatchEvent(evt);
+}
+
 function handleClick(e) {
   if (e.button === 2) {
     let li = e.target.closest("li");
@@ -132,6 +139,11 @@ function handleClick(e) {
         closePopup: true,
       });
     }
+    return;
+  }
+
+  if (e.target.classList.contains("clearInput")) {
+    changeInputWithEvent(e.target.previousElementSibling, "");
     return;
   }
 
@@ -364,6 +376,10 @@ function addLanguageSelector(frag, label, platformDetails, editingAction) {
     i.value = language;
   }
   d.appendChild(i);
+
+  let b = document.createElement("button");
+  b.classList.add("clearInput");
+  d.appendChild(b);
 
   i.addEventListener("change", e => {
     i.value = i.value.trim();
