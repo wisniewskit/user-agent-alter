@@ -116,11 +116,20 @@
   "platformOptionExpand": {
     "message": "Show applied overrides"
   },
-  "platformOptionBack": {
-    "message": "Back to UA List"
+  "platformOptionUpdate": {
+    "message": "Update"
+  },
+  "platformOptionCancel": {
+    "message": "Cancel"
+  },
+  "platformOptionClear": {
+    "message": "Clear override"
   },
   "platformUnset": {
     "message": "-"
+  },
+  "platformModifyTitle": {
+    "message": "Altering $1 override"
   },
   "platformSelectForTab": {
     "message": "Select UA override for this tab"

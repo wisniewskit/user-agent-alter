@@ -72,6 +72,9 @@ h1, p, li {
   line-height: var(--size);
   white-space: nowrap;
 }
+.details > h1:first-of-type {
+  text-align: center;
+}
 .breakdown h1 {
   font-size: smaller;
 }
@@ -215,4 +218,13 @@ button.refresh {
 }
 .languageSelect>input {
   flex: 1;
+}
+button[data-action="update"],
+button[data-action="update"]~button,
+button[data-action="update"]~button~button {
+  display: inline-block;
+  text-align: center;
+  width: 32.25%;
+  margin-left: 0.5%;
+  margin-right: 0.5%;
 }

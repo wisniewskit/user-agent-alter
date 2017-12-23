@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 let CurrentPlatforms;
+let CurrentOverrides;
 let CurrentURL;
 let CurrentContainer = {};
 
@@ -89,7 +90,7 @@ function handleClick(e) {
 
   let action = e.target.getAttribute("data-action");
   if (action) {
-    if (action === "back") {
+    if (action === "cancel") {
       hideCopiedTooltip();
       goBackToList();
     } else if (action === "refresh") {
@@ -106,7 +107,15 @@ function handleClick(e) {
       document.querySelector(".breakdown").style.maxHeight = "0";
       e.target.style.display = "none";
       document.querySelector("[data-action='expand']").style.display = "";
+    } else if (action === "clear") {
+      let details = document.querySelector(".details");
+      let scope = details.getAttribute("data-editing-scope");
+      changeActivePlatform({scope, closePopup: true});
     } else {
+      if (action === "update") {
+        let details = document.querySelector(".details");
+        action = details.getAttribute("data-editing-scope");
+      }
       let details = document.querySelector(".details");
       let platform = details.getAttribute("data-for-list-item");
       changeActivePlatform({
@@ -122,9 +131,9 @@ function handleClick(e) {
   let li = e.target.closest("li");
   if (li) {
     let platform = li.getAttribute("data-name");
+    let action = li.getAttribute("data-action");
 
     if (e.target.nodeName === "BUTTON") {
-      let action = li.getAttribute("data-action");
       if (action && action.startsWith("unset-")) {
         changeActivePlatform({
           scope: action.substr(6),
@@ -134,18 +143,23 @@ function handleClick(e) {
         })
       } else {
         hideCopiedTooltip();
-        drillDownIntoDetails(platform);
+        drillDownIntoDetails({platform});
       }
       return;
     }
 
     if (platform) {
-      changeActivePlatform({
-        platform,
-        language: CurrentPlatforms[platform].language,
-        scope: "tab",
-        closePopup: true,
-      });
+      if (action && action.startsWith("unset-")) {
+        hideCopiedTooltip();
+        drillDownIntoDetails({platform, action: action.substr(6)});
+      } else {
+        changeActivePlatform({
+          platform,
+          language: CurrentPlatforms[platform].language,
+          scope: "tab",
+          closePopup: true,
+        });
+      }
     }
   }
 }
@@ -181,7 +195,8 @@ function addUnsetEntryTo(frag, platform, headerText, action) {
   let ol = document.createElement("ol");
   frag.appendChild(ol);
 
-  let li = createLIForPlatform(platform, PlatformUnset);
+  let li = createLIForPlatform(CurrentPlatforms[platform], PlatformUnset);
+  li.setAttribute("data-name", platform);
   li.setAttribute("data-action", action);
   ol.appendChild(li);
 }
@@ -216,7 +231,9 @@ function determinePlatformOptions(data) {
   PlatformOptions.push({label: browser.i18n.getMessage("platformOptionCollapse"), action: "collapse"});
 
   PlatformOptions.push({label: "separator"});
-  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionBack"), action: "back"});
+  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionUpdate"), action: "update"});
+  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionCancel"), action: "cancel"});
+  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionClear"), action: "clear"});
 }
 
 function redrawList(data) {
@@ -247,6 +264,7 @@ function redrawList(data) {
     platforms[name] = new Platform(spec);
   }
   CurrentPlatforms = platforms;
+  CurrentOverrides = data.overrides;
 
   determinePlatformOptions(data);
 
@@ -255,7 +273,7 @@ function redrawList(data) {
 
   for (let {label, action} of PlatformOptions) {
     if (data.overrides[action]) {
-      addUnsetEntryTo(frag, platforms[data.overrides[action].platform],
+      addUnsetEntryTo(frag, data.overrides[action].platform,
                       label, `unset-${action}`);
     }
   }
@@ -281,10 +299,14 @@ function redrawList(data) {
   list.appendChild(frag);
 }
 
-function addDetailsHeader(parent, messageName, messageArgs) {
+function addDetailsHeader(parent, messageName, messageArgs, secondLineText) {
   let label = document.createElement("h1");
   let message = browser.i18n.getMessage(messageName, messageArgs) || messageName;
   label.appendChild(document.createTextNode(message));
+  if (secondLineText) {
+    label.appendChild(document.createElement("br"));
+    label.appendChild(document.createTextNode(secondLineText));
+  }
   parent.appendChild(label);
   return label;
 }
@@ -316,7 +338,7 @@ function relaxFocusedInput(e) {
   (e.target.previousElementSibling || e.target.nextElementSibling).style.maxWidth = "";
 }
 
-function addLanguageSelector(frag, label, platformDetails) {
+function addLanguageSelector(frag, label, platformDetails, editingAction) {
   let d = document.createElement("div");
   d.classList.add("languageSelect");
   frag.appendChild(d);
@@ -329,8 +351,10 @@ function addLanguageSelector(frag, label, platformDetails) {
   let i = document.createElement("input");
   i.id = "language";
   i.setAttribute("placeholder", DefaultUALanguage);
-  if (platformDetails.language !== DefaultUALanguage) {
-    i.value = platformDetails.language;
+
+  let {language} = CurrentOverrides[editingAction] || {};
+  if (language && language !== DefaultUALanguage) {
+    i.value = language;
   }
   d.appendChild(i);
 
@@ -341,23 +365,41 @@ function addLanguageSelector(frag, label, platformDetails) {
   });
 }
 
-function redrawDetails(platform) {
+function redrawDetails(config) {
+  let {platform, action} = config;
+  let editingAction = action;
+  let editing = CurrentOverrides[editingAction] &&
+                CurrentOverrides[editingAction].platform === platform;
+
   let details = document.querySelector(".details");
   details.setAttribute("data-for-list-item", platform);
+  details.setAttribute("data-editing-scope", editingAction);
 
   let frag = document.createDocumentFragment();
   let platformDetails = CurrentPlatforms[platform];
 
-  addDetailsHeader(frag, "platformSelectDetails", [platformDetails.label]);
+  if (editing) {
+    addDetailsHeader(frag, "platformModifyTitle", [editingAction],
+                     `(${platformDetails.label})`);
+  } else {
+    addDetailsHeader(frag, "platformSelectDetails", [platformDetails.label]);
+  }
 
   for (let {label, action} of PlatformOptions) {
+    if (editing && ["tab", "subdomain", "domain", "window",
+                    "container", "global"].indexOf(action) > -1) {
+      continue;
+    } else if (!editing && ["update", "clear"].indexOf(action) > -1) {
+      continue;
+    }
+
     if (label === "separator") {
       frag.appendChild(document.createElement("hr"));
       continue;
     }
 
     if (action === "language") {
-      addLanguageSelector(frag, label, platformDetails);
+      addLanguageSelector(frag, label, platformDetails, editingAction);
       continue;
     }
 
