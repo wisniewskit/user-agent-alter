@@ -1,9 +1,16 @@
+* {
+  font-size: 16px;
+}
+h2 {
+  font-size: 18px;
+}
 table.custom {
   width: 100%;
 }
 table.custom th {
   text-align: left;
   white-space: nowrap;
+  font-weight: normal;
 }
 table.custom td {
   width: 100%;
@@ -20,4 +27,7 @@ table.custom div > button {
 }
 button:disabled {
   background: url("../icons/loading.svg") 50% 50% no-repeat;
+}
+button::-moz-focus-inner {
+  border: 0;
 }
