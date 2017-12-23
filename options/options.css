@@ -1,0 +1,23 @@
+table.custom {
+  width: 100%;
+}
+table.custom th {
+  text-align: left;
+  white-space: nowrap;
+}
+table.custom td {
+  width: 100%;
+}
+table.custom td > div {
+  display: flex;
+}
+table.custom div > input {
+  flex: 1;
+}
+table.custom div > button {
+  flex: 0;
+  white-space: nowrap;
+}
+button:disabled {
+  background: url("../icons/loading.svg") 50% 50% no-repeat;
+}

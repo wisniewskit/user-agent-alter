@@ -142,5 +142,20 @@
   },
   "platformSelectScriptOverrides": {
     "message": "Script overrides"
+  },
+  "settingUpdate": {
+    "message": "Update Settings"
+  },
+  "settingUpdateFrequency": {
+    "message": "Update frequency (ms):"
+  },
+  "settingUpdateLastCheckedDate": {
+    "message": "Last checked:"
+  },
+  "settingUpdateUpdateNow": {
+    "message": "Update now"
+  },
+  "settingUpdateURL": {
+    "message": "Update URL:"
   }
 }

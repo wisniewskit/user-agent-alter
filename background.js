@@ -15,10 +15,14 @@ let DomainOverrides = {};
 let ContainerOverrides = {};
 let PlatformSpecs = {};
 
+const DefaultUpdateFrequency = 1000 * 60 * 60 * 24 * 4; // check every 4 days by default
+const DefaultUpdateURL = "https://raw.githubusercontent.com/wisniewskit/user-agent-alter/master/platform_list.json";
+const UpdateTimeout = 10000;
+
 let UpdateStatus;
 let UpdateLastCheckedDate;
-let UpdateFrequency = 1000 * 60 * 60 * 24 * 4; // check every 4 days by default
-let UpdateURL = "https://raw.githubusercontent.com/wisniewskit/user-agent-alter/master/platform_list.json";
+let UpdateFrequency = DefaultUpdateFrequency;
+let UpdateURL = DefaultUpdateURL;
 
 readConfig().then(checkForUAListUpdate);
 
@@ -26,11 +30,12 @@ function checkForUAListUpdate(force=false) {
   if (force ||
       !UpdateLastCheckedDate ||
       new Date().getTime() > UpdateLastCheckedDate + UpdateFrequency) {
-    remoteUpdateUAList().then(() => {
+    return remoteUpdateUAList().then(() => {
       UpdateLastCheck = new Date().getTime();
       setStorage("update.lastChecked", UpdateLastCheck);
     });
   }
+  return Promise.reject();
 }
 
 function readConfig() {
@@ -46,8 +51,8 @@ function readConfig() {
         PlatformOverrides[key.substr(9)] = value;
       } else if (key === "update.cachedUAList") {
         PlatformSpecs = value;
-      } else if (key === "update.frequencyHours") {
-        UpdateFrequency = (parseInt(value) * 60 * 1000) || UpdateFrequency;
+      } else if (key === "update.frequency") {
+        UpdateFrequency = parseInt(value) || UpdateFrequency;
       } else if (key === "update.lastChecked") {
         UpdateLastCheckedDate = value;
       } else if (key === "update.url") {
@@ -71,8 +76,18 @@ function sendStateInfoToPopup() {
 function remoteUpdateUAList() {
   UpdateStatus = "loading";
   browser.runtime.sendMessage({updateStatus: UpdateStatus});
-  return fetch(UpdateURL, {method: "GET", mode: "no-cors",
-                           redirect: "error", cache: "no-cache"}).
+
+  var controller = new AbortController();
+  var {signal} = controller;
+  setTimeout(() => { controller.abort() }, UpdateTimeout);
+
+  return fetch(UpdateURL, {
+    method: "GET",
+    mode: "no-cors",
+    signal,
+    redirect: "error",
+    cache: "no-cache",
+  }).
     then(response => response.json()).
     then(platformSpecs => {
       UpdateStatus = undefined;
@@ -81,6 +96,9 @@ function remoteUpdateUAList() {
       sendStateInfoToPopup();
     }).
     catch(e => {
+      if (e.name === "AbortError") {
+        e = "Timed out";
+      }
       UpdateStatus = e + "";
       console.error(e);
       browser.runtime.sendMessage({updateStatus: UpdateStatus});
@@ -321,9 +339,52 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message === "getState") {
     sendStateInfoToPopup();
     return;
+  } else if (message === "getSettings") {
+    return sendResponse({
+      update: {
+        url: {
+          value: UpdateURL,
+          default: DefaultUpdateURL,
+        },
+        frequency: {
+          value: UpdateFrequency,
+          default: DefaultUpdateFrequency,
+        },
+        lastCheckedDate: {
+          value: UpdateLastCheckedDate,
+          type: "date",
+          readonly: true,
+          action: "updateNow",
+        },
+      },
+    });
   } else if (message === "refreshList") {
     remoteUpdateUAList(true);
     return;
+  } else if (message.action === "updateNow") {
+    checkForUAListUpdate(true).then(() => {
+      sendResponse({newValue: UpdateLastCheck, type: "date"});
+    }).catch(e => {
+      sendResponse({error: e + ""});
+    });
+    return true;
+  } else if (message.action === "setupdateurl") {
+    try {
+      UpdateURL = message.value ? new URL(message.value) : DefaultUpdateURL;
+      setStorage("update.url", message.value);
+    } catch(e) {
+    }
+    return sendResponse({
+      value: UpdateURL,
+      default: DefaultUpdateURL,
+    });
+  } else if (message.action === "setupdatefrequency") {
+    UpdateFrequency = parseInt(message.value) || DefaultUpdateFrequency;
+    setStorage("update.frequency", message.value);
+    return sendResponse({
+      value: UpdateFrequency,
+      default: DefaultUpdateFrequency,
+    });
   }
 
   onPopupChanged(message);
