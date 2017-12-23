@@ -15,7 +15,14 @@ const DrillDownArrow = browser.i18n.getMessage("drillDownArrow");
 
 let PlatformOptions = [];
 
-browser.runtime.onMessage.addListener(redraw);
+browser.runtime.onMessage.addListener(data => {
+  if (document.querySelector(".details[data-editing-scope]")) {
+    hideCopiedTooltip();
+    goBackToList().then(() => { redraw(data); });
+  } else {
+    redraw(data);
+  }
+});
 browser.runtime.sendMessage("getState");
 
 function hideCopiedTooltip(y) {

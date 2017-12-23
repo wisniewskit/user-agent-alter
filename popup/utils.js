@@ -20,8 +20,10 @@ function drillDownIntoDetails(config) {
 }
 
 function goBackToList() {
-  slideViewBackLeft().then(() => {
-    document.querySelector(".details").removeAttribute("data-for-list-item");
+  return slideViewBackLeft().then(() => {
+    let details = document.querySelector(".details");
+    details.removeAttribute("data-editing-scope");
+    details.removeAttribute("data-for-list-item");
     restoreScrollTop();
   });
 }
