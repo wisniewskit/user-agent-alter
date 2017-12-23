@@ -1,4 +1,5 @@
-let Platform = (function() {
+if (typeof Platform === "undefined")
+Platform = (function() {
   const langregex = /lang/i;
 
   return class Platform {

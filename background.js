@@ -229,7 +229,9 @@ const updateContentScript = (function() {
 
   return async function updateContentScript(platform, alsoRunForTabs=[]) {
     if (currentContentScript) {
-      await currentContentScript.unregister();
+      try {
+        await currentContentScript.unregister();
+      } catch(e) {}
       currentContentScript = undefined;
     }
 
