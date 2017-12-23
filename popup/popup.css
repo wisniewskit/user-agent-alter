@@ -206,6 +206,7 @@ button.refresh {
   padding: 0;
   border: 0;
   height: 1.5em;
+  font-size: inherit;
 }
 .languageSelect>label {
   padding-right: 0.5em;
