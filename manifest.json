@@ -42,15 +42,6 @@
     "default_title": "__MSG_addonName__",
     "default_popup": "popup/popup.html"
   },
-  "content_scripts": [{
-    "js": [
-      "platform.js",
-      "content.js"
-    ],
-    "matches": ["<all_urls>"],
-    "run_at": "document_start",
-    "all_frames": true
-  }],
   "web_accessible_resources": [
     "icons/*.svg"
   ]

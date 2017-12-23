@@ -194,3 +194,24 @@ div.loading, button.refresh {
 button.refresh {
   background: url("../icons/reload.svg") 14px 50% no-repeat;
 }
+.languageSelect {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  align-items: baseline;
+}
+.languageSelect>label, .languageSelect>input {
+  -moz-appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  height: 1.5em;
+}
+.languageSelect>label {
+  padding-right: 0.5em;
+  white-space: nowrap;
+  flex: 0;
+}
+.languageSelect>input {
+  flex: 1;
+}

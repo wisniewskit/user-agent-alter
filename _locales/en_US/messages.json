@@ -107,6 +107,9 @@
   "platformOptionGlobal": {
     "message": "Global UA override"
   },
+  "platformOptionLanguage": {
+    "message": "Use language code:"
+  },
   "platformOptionCollapse": {
     "message": "Hide applied overrides"
   },

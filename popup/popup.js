@@ -6,6 +6,8 @@ let CurrentPlatforms;
 let CurrentURL;
 let CurrentContainer = {};
 
+const DefaultUALanguage = navigator.language;
+
 const PlatformSelectForTab = browser.i18n.getMessage("platformSelectForTab");
 const PlatformUnset = browser.i18n.getMessage("platformUnset");
 const DrillDownArrow = browser.i18n.getMessage("drillDownArrow");
@@ -38,7 +40,7 @@ function showCopiedTooltip(y) {
 
 function simulateLongTapAsRightClick() {
   let touchStart;
-  let longTapDelay = 1000;;
+  let longTapDelay = 1000;
   document.body.addEventListener("touchstart", e => {
     touchStart = touchStart || new Date();
   });
@@ -107,7 +109,12 @@ function handleClick(e) {
     } else {
       let details = document.querySelector(".details");
       let platform = details.getAttribute("data-for-list-item");
-      changeActivePlatform(platform, action);
+      changeActivePlatform({
+        platform,
+        language: CurrentPlatforms[platform].language,
+        scope: action,
+        closePopup: true,
+      });
     }
     return;
   }
@@ -119,7 +126,9 @@ function handleClick(e) {
     if (e.target.nodeName === "BUTTON") {
       let action = li.getAttribute("data-action");
       if (action && action.startsWith("unset-")) {
-        changeActivePlatform(undefined, action.substr(6), false).then(() => {
+        changeActivePlatform({
+          scope: action.substr(6),
+        }).then(() => {
           li.parentNode.previousSibling.remove();
           li.parentNode.remove();
         })
@@ -131,7 +140,12 @@ function handleClick(e) {
     }
 
     if (platform) {
-      changeActivePlatform(platform, "tab");
+      changeActivePlatform({
+        platform,
+        language: CurrentPlatforms[platform].language,
+        scope: "tab",
+        closePopup: true,
+      });
     }
   }
 }
@@ -195,6 +209,9 @@ function determinePlatformOptions(data) {
   PlatformOptions.push({label: browser.i18n.getMessage("platformOptionGlobal"), action: "global"});
 
   PlatformOptions.push({label: "separator"});
+  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionLanguage"), action: "language"});
+
+  PlatformOptions.push({label: "separator"});
   PlatformOptions.push({label: browser.i18n.getMessage("platformOptionExpand"), action: "expand"});
   PlatformOptions.push({label: browser.i18n.getMessage("platformOptionCollapse"), action: "collapse"});
 
@@ -238,7 +255,8 @@ function redrawList(data) {
 
   for (let {label, action} of PlatformOptions) {
     if (data.overrides[action]) {
-      addUnsetEntryTo(frag, platforms[data.overrides[action]], label, `unset-${action}`);
+      addUnsetEntryTo(frag, platforms[data.overrides[action].platform],
+                      label, `unset-${action}`);
     }
   }
 
@@ -298,6 +316,31 @@ function relaxFocusedInput(e) {
   (e.target.previousElementSibling || e.target.nextElementSibling).style.maxWidth = "";
 }
 
+function addLanguageSelector(frag, label, platformDetails) {
+  let d = document.createElement("div");
+  d.classList.add("languageSelect");
+  frag.appendChild(d);
+
+  let l = document.createElement("label");
+  l.setAttribute("for", "language");
+  l.appendChild(document.createTextNode(label));
+  d.appendChild(l);
+
+  let i = document.createElement("input");
+  i.id = "language";
+  i.setAttribute("placeholder", DefaultUALanguage);
+  if (platformDetails.language !== DefaultUALanguage) {
+    i.value = platformDetails.language;
+  }
+  d.appendChild(i);
+
+  i.addEventListener("change", e => {
+    i.value = i.value.trim();
+    platformDetails.language = i.value || i.placeholder;
+    redrawBreakdown(document.querySelector(".breakdown"), platformDetails);
+  });
+}
+
 function redrawDetails(platform) {
   let details = document.querySelector(".details");
   details.setAttribute("data-for-list-item", platform);
@@ -310,6 +353,11 @@ function redrawDetails(platform) {
   for (let {label, action} of PlatformOptions) {
     if (label === "separator") {
       frag.appendChild(document.createElement("hr"));
+      continue;
+    }
+
+    if (action === "language") {
+      addLanguageSelector(frag, label, platformDetails);
       continue;
     }
 
@@ -326,19 +374,7 @@ function redrawDetails(platform) {
       bd.classList.add("expandable");
       frag.appendChild(bd);
 
-      addDetailsHeader(bd, "platformSelectHeaderOverrides");
-      let ul = document.createElement("ul");
-      bd.appendChild(ul);
-      for (let override of platformDetails.headers()) {
-        addInputPairLI(ul, override.name, override.value);
-      }
-
-      addDetailsHeader(bd, "platformSelectScriptOverrides");
-      ul = document.createElement("ul");
-      bd.appendChild(ul);
-      for (let override of platformDetails.overrides()) {
-        addInputPairLI(ul, override.name, override.value);
-      }
+      redrawBreakdown(bd, platformDetails);
     }
   }
 
@@ -346,10 +382,28 @@ function redrawDetails(platform) {
   details.appendChild(frag);
 }
 
-function changeActivePlatform(platform, scope, closePopup = true) {
+function redrawBreakdown(bd, platformDetails) {
+  bd.innerHTML = "";
+
+  addDetailsHeader(bd, "platformSelectHeaderOverrides");
+  let ul = document.createElement("ul");
+  bd.appendChild(ul);
+  for (let override of platformDetails.headers()) {
+    addInputPairLI(ul, override.name, override.value);
+  }
+
+  addDetailsHeader(bd, "platformSelectScriptOverrides");
+  ul = document.createElement("ul");
+  bd.appendChild(ul);
+  for (let override of platformDetails.overrides()) {
+    addInputPairLI(ul, override.name, override.value);
+  }
+}
+
+function changeActivePlatform(message) {
   return new Promise(resolve => {
-    browser.runtime.sendMessage({platform, scope, closePopup}, () => {
-      if (closePopup && !IsAndroid) {
+    browser.runtime.sendMessage(message, () => {
+      if (message.closePopup && !IsAndroid) {
         this.close();
       }
       resolve();

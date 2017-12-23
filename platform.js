@@ -20,7 +20,7 @@ let Platform = (function() {
         }
       } else if (name.match(langregex)) {
         value = value.replace("LANGLC", this._langLC).
-                      replace("LANG2", this._lang2).
+                      replace("LANGMAJOR", this._langMajor).
                       replace("LANG", this._lang);
       }
       return value;
@@ -33,7 +33,7 @@ let Platform = (function() {
     set language(lang) {
       this._lang = lang;
       this._langLC = lang.toLowerCase();
-      this._lang2 = lang.substr(0, 2);
+      this._langMajor = lang.split("-")[0];
     }
 
     get label() {

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 function selectPlatform(spec) {
+console.log(spec)
   window.eval(`(function(spec) {
     for (let override of spec.overrides) {
       let [parentName, name] = override.name.split(".");
