@@ -1,5 +1,4 @@
-if (typeof Platform === "undefined")
-Platform = (function() {
+var Platform = window.Platform || (function() {
   const langregex = /lang/i;
 
   return class Platform {
