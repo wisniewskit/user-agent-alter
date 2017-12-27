@@ -246,6 +246,16 @@ button.clearInput::-moz-focus-inner {
 button.withIcon {
   padding-left: 1.5em;
 }
+.details button {
+  text-align: left;
+}
+button[data-action="update"],
+button[data-action="update"]~button,
+button[data-action="update"]~button~button {
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+}
 button.withIcon > span {
   margin-left: -1.2em;
   margin-top: 0.15em;
