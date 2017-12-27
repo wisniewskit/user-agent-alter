@@ -124,7 +124,9 @@ function handleClick(e) {
     } else if (action === "clear") {
       let details = document.querySelector(".details");
       let scope = details.getAttribute("data-editing-scope");
-      changeActivePlatform({scope, closePopup: true});
+      changeActivePlatform({scope}).then(data => {
+        browser.runtime.sendMessage("getState");
+      });
     } else {
       if (action === "update") {
         let details = document.querySelector(".details");
