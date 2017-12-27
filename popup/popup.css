@@ -243,3 +243,16 @@ button.clearInput {
 button.clearInput::-moz-focus-inner {
   border: 0;
 }
+button.withIcon {
+  padding-left: 1.5em;
+}
+button.withIcon > span {
+  margin-left: -1.2em;
+  margin-top: 0.15em;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: absolute;
+}

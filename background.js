@@ -295,12 +295,10 @@ async function getStateInfoForPopup(tab) {
       window: WindowOverrides[tab.windowId],
       global: GlobalOverride,
     },
-    container: {
-      cookieStoreId: container.cookieStoreId,
-      name: container.name,
-    },
+    container,
     platformSpecs: PlatformSpecs,
     url: tab.url,
+    favIconUrl: tab.favIconUrl,
     updateStatus: UpdateStatus,
   };
 }

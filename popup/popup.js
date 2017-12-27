@@ -221,26 +221,39 @@ function addUnsetEntryTo(frag, platform, headerText, action) {
 }
 
 function determinePlatformOptions(data) {
-  PlatformOptions = [{label: browser.i18n.getMessage("platformOptionTab"), action: "tab"}];
+  PlatformOptions = [{label: browser.i18n.getMessage("platformOptionTab"),
+                      action: "tab",
+                      iconUrl: browser.runtime.getURL("../icons/tab.svg")}];
 
   let host = new URL(data.url).host;
   let tld = getTLD(host);
+  let favIconUrl = data.favIconUrl || "chrome://mozapps/skin/places/defaultFavicon.svg";
   if (host && host !== tld) {
-    PlatformOptions.push({label: browser.i18n.getMessage("platformOptionSubdomain", host), action: "subdomain"});
+    PlatformOptions.push({label: browser.i18n.getMessage("platformOptionSubdomain", host),
+                          action: "subdomain",
+                          iconUrl: favIconUrl});
   }
   if (tld) {
-    PlatformOptions.push({label: browser.i18n.getMessage("platformOptionDomain", tld), action: "domain"});
+    PlatformOptions.push({label: browser.i18n.getMessage("platformOptionDomain", tld),
+                          action: "domain",
+                          iconUrl: favIconUrl});
   }
 
   if (data.container.cookieStoreId) {
-    PlatformOptions.push({label: browser.i18n.getMessage("platformOptionContainer", data.container.name), action: "container"});
+    PlatformOptions.push({label: browser.i18n.getMessage("platformOptionContainer", data.container.name),
+                          action: "container",
+                          iconUrl: data.container.iconUrl});
   }
 
   if (!IsAndroid) { // There is no point to showing the "window" option on Fennec.
-    PlatformOptions.push({label: browser.i18n.getMessage("platformOptionWindow"), action: "window"});
+    PlatformOptions.push({label: browser.i18n.getMessage("platformOptionWindow"),
+                          action: "window",
+                          iconUrl: browser.runtime.getURL("../icons/window.svg")});
   }
 
-  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionGlobal"), action: "global"});
+  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionGlobal"),
+                        action: "global",
+                        iconUrl: browser.runtime.getURL("../icons/global.svg")});
 
   PlatformOptions.push({label: "separator"});
   PlatformOptions.push({label: browser.i18n.getMessage("platformOptionLanguage"), action: "language"});
@@ -408,7 +421,7 @@ function redrawDetails(config) {
     addDetailsHeader(frag, "platformSelectDetails", [platformDetails.label]);
   }
 
-  for (let {label, action} of PlatformOptions) {
+  for (let {label, action, iconUrl} of PlatformOptions) {
     if (editing && ["tab", "subdomain", "domain", "window",
                     "container", "global"].indexOf(action) > -1) {
       continue;
@@ -427,6 +440,12 @@ function redrawDetails(config) {
     }
 
     let opt = document.createElement("button");
+    opt.classList.add("withIcon");
+    let i = document.createElement("span");
+    i.style.backgroundImage = `url(${iconUrl})`;
+    if (iconUrl) {
+      opt.appendChild(i);
+    }
     opt.appendChild(document.createTextNode(label));
     opt.setAttribute("data-action", action);
     frag.appendChild(opt);
