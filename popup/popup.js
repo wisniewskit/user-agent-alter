@@ -227,7 +227,7 @@ function determinePlatformOptions(data) {
 
   let host = new URL(data.url).host;
   let tld = getTLD(host);
-  let favIconUrl = data.favIconUrl || "chrome://mozapps/skin/places/defaultFavicon.svg";
+  let favIconUrl = data.favIconUrl || browser.runtime.getURL("../icons/favicon.svg");
   if (host && host !== tld) {
     PlatformOptions.push({label: browser.i18n.getMessage("platformOptionSubdomain", host),
                           action: "subdomain",
