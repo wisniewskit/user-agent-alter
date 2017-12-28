@@ -5,6 +5,7 @@ var Platform = window.Platform || (function() {
     constructor(spec, config={}) {
       this.spec = spec;
       this.config = config;
+      this.geolocation = config.geolocation;
       this.language = config.language || navigator.language;
       this.acceptWebP = config.acceptWebP || false;
       this.acceptJXR = config.acceptJXR || false;
@@ -74,6 +75,7 @@ var Platform = window.Platform || (function() {
         icon: this.icon,
         version: this.version,
         language: this.language,
+        geolocation: this.geolocation,
         headers: [...this.headers()],
         overrides: [...this.overrides()],
       }

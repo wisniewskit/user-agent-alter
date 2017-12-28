@@ -137,6 +137,7 @@ function handleClick(e) {
       changeActivePlatform({
         platform,
         language: CurrentPlatforms[platform].language,
+        geolocation: CurrentPlatforms[platform].geolocation,
         scope: action,
         closePopup: true,
       });
@@ -177,6 +178,7 @@ function handleClick(e) {
         changeActivePlatform({
           platform,
           language: CurrentPlatforms[platform].language,
+          geolocation: CurrentPlatforms[platform].geolocation,
           scope: "tab",
           closePopup: true,
         });
@@ -259,6 +261,7 @@ function determinePlatformOptions(data) {
 
   PlatformOptions.push({label: "separator"});
   PlatformOptions.push({label: browser.i18n.getMessage("platformOptionLanguage"), action: "language"});
+  PlatformOptions.push({label: browser.i18n.getMessage("platformOptionGeolocation"), action: "geolocation"});
 
   PlatformOptions.push({label: "separator"});
   PlatformOptions.push({label: browser.i18n.getMessage("platformOptionExpand"), action: "expand"});
@@ -372,6 +375,41 @@ function relaxFocusedInput(e) {
   (e.target.previousElementSibling || e.target.nextElementSibling).style.maxWidth = "";
 }
 
+function addGeolocationSelector(frag, label, platformDetails, editingAction) {
+  let d = document.createElement("div");
+  d.classList.add("geolocationSelect");
+  frag.appendChild(d);
+
+  let l = document.createElement("label");
+  l.setAttribute("for", "latitude");
+  l.appendChild(document.createTextNode(label));
+  d.appendChild(l);
+
+  let {geolocation} = CurrentOverrides[editingAction] || {};
+  for (let coord of ["latitude", "longitude"]) {
+    let i = document.createElement("input");
+    i.id = coord;
+    i.setAttribute("placeholder", browser.i18n.getMessage(coord));
+
+    if (geolocation) {
+      i.value = geolocation[coord];
+    }
+    d.appendChild(i);
+
+    let b = document.createElement("button");
+    b.classList.add("clearInput");
+    d.appendChild(b);
+
+    i.addEventListener("change", e => {
+      i.value = i.value.trim();
+      if (!platformDetails.geolocation) {
+        platformDetails.geolocation = {latitude: 0, longitude: 0};
+      }
+      platformDetails.geolocation[coord] = parseFloat(i.value) || 0;
+    });
+  }
+}
+
 function addLanguageSelector(frag, label, platformDetails, editingAction) {
   let d = document.createElement("div");
   d.classList.add("languageSelect");
@@ -438,6 +476,11 @@ function redrawDetails(config) {
 
     if (action === "language") {
       addLanguageSelector(frag, label, platformDetails, editingAction);
+      continue;
+    }
+
+    if (action === "geolocation") {
+      addGeolocationSelector(frag, label, platformDetails, editingAction);
       continue;
     }
 

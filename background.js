@@ -138,8 +138,8 @@ function getActiveWindowTab() {
 
 function onPopupChanged(message) {
   getActiveWindowTab().then(tab => {
-    let {platform, language, scope} = message;
-    let override = {platform, language};
+    let {platform, language, geolocation, scope} = message;
+    let override = {platform, language, geolocation};
 
     let host = new URL(tab.url).host;
     let tld = getTLD(host);

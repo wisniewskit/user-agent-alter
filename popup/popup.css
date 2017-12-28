@@ -197,13 +197,14 @@ div.loading, button.refresh {
 button.refresh {
   background: url("../icons/reload.svg") 14px 50% no-repeat;
 }
-.languageSelect {
+.languageSelect, .geolocationSelect {
   display: flex;
   margin: 0;
   padding: 0;
   align-items: baseline;
 }
-.languageSelect>label, .languageSelect>input {
+.languageSelect>label, .languageSelect>input,
+.geolocationSelect>label, .geolocationSelect>input {
   -moz-appearance: none;
   margin: 0;
   padding: 0;
@@ -211,12 +212,14 @@ button.refresh {
   height: 1.5em;
   font-size: inherit;
 }
-.languageSelect>label {
+.languageSelect>label,
+.geolocationSelect>label {
   padding-right: 0.5em;
   white-space: nowrap;
   flex: 0;
 }
-.languageSelect>input {
+.languageSelect>input,
+.geolocationSelect>input {
   flex: 1;
 }
 button[data-action="update"],
@@ -230,7 +233,8 @@ button[data-action="update"]~button~button {
 }
 button.clearInput {
   -moz-appearance: none;
-  position: absolute;
+  position: relative;
+  top: -0.4em;
   right: 0;
   border: 0;
   padding: 0;

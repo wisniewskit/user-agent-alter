@@ -110,6 +110,15 @@
   "platformOptionLanguage": {
     "message": "Use language code:"
   },
+  "platformOptionGeolocation": {
+    "message": "Use geolocation:"
+  },
+  "latitude": {
+    "message": "Latitude"
+  },
+  "longitude": {
+    "message": "Longitude"
+  },
   "platformOptionCollapse": {
     "message": "Hide applied overrides"
   },
