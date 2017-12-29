@@ -235,6 +235,9 @@ function updateBrowserAction(tabId, platform) {
 }
 
 browser.webNavigation.onCommitted.addListener(details => {
+  if (details.frameId) {
+    return; // Ignore frames, just listen for top-level navigations.
+  }
   browser.tabs.get(details.tabId).then(tab => {
     let platform = getActivePlatformForTab(tab);
     updateContentScript(platform, [tab.id]);
