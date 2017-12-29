@@ -402,10 +402,15 @@ function addGeolocationSelector(frag, label, platformDetails, editingAction) {
 
     i.addEventListener("change", e => {
       i.value = i.value.trim();
-      if (!platformDetails.geolocation) {
-        platformDetails.geolocation = {latitude: 0, longitude: 0};
+      let latitude = document.querySelector("#latitude").value;
+      let longitude = document.querySelector("#longitude").value;
+      if (latitude === longitude && latitude === "") {
+        delete platformDetails.geolocation;
+      } else {
+        latitude = parseFloat(latitude) || 0;
+        longitude = parseFloat(longitude) || 0;
+        platformDetails.geolocation = {latitude, longitude};
       }
-      platformDetails.geolocation[coord] = parseFloat(i.value) || 0;
     });
   }
 }
