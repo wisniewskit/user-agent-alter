@@ -31,8 +31,8 @@ function checkForUAListUpdate(force=false) {
       !UpdateLastCheckedDate ||
       new Date().getTime() > UpdateLastCheckedDate + UpdateFrequency) {
     return remoteUpdateUAList().then(() => {
-      UpdateLastCheck = new Date().getTime();
-      setStorage("update.lastChecked", UpdateLastCheck);
+      UpdateLastCheckedDate = new Date().getTime();
+      setStorage("update.lastChecked", UpdateLastCheckedDate);
     });
   }
   return Promise.reject();
@@ -364,7 +364,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return;
   } else if (message.action === "updateNow") {
     checkForUAListUpdate(true).then(() => {
-      sendResponse({newValue: UpdateLastCheck, type: "date"});
+      sendResponse({newValue: UpdateLastCheckedDate, type: "date"});
     }).catch(e => {
       sendResponse({error: e + ""});
     });
