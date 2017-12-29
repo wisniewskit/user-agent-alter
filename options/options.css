@@ -1,8 +1,12 @@
 * {
   font-size: 16px;
 }
-h2 {
+h1 {
+  font-size: 20px;
+}
+legend {
   font-size: 18px;
+  font-style: italic;
 }
 table.custom {
   width: 100%;

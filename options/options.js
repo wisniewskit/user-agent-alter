@@ -15,12 +15,21 @@ function formatValue(value, type) {
 
 browser.runtime.sendMessage("getSettings", settingGroups => {
   DOMReadyPromise.then(() => {
+    let h = document.createElement("h1");
+    let label = browser.i18n.getMessage("addonName");
+    document.title = label;
+    h.appendChild(document.createTextNode(label));
+    document.body.appendChild(h);
+
     for (let [groupName, group] of Object.entries(settingGroups)) {
-      let h = document.createElement("h2");
+      let f = document.createElement("fieldset");
+      f.classList.add("custom");
+      document.body.appendChild(f);
+
+      let l = document.createElement("legend");
       let label = browser.i18n.getMessage(`setting${groupName}`);
-      h.appendChild(document.createTextNode(label));
-      h.classList.add("custom");
-      document.body.appendChild(h);
+      l.appendChild(document.createTextNode(label));
+      f.appendChild(l);
 
       let t = document.createElement("table");
       t.classList.add("custom");
@@ -61,7 +70,7 @@ browser.runtime.sendMessage("getSettings", settingGroups => {
         }
       }
 
-      document.body.appendChild(t);
+      f.appendChild(t);
     }
 
     document.body.addEventListener("change", e => {
